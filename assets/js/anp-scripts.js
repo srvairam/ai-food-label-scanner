@@ -128,6 +128,27 @@ function resizeAndSend(file) {
   reader.readAsDataURL(file);
 }
 
+  // Determine traffic-light level for a nutrient value.
+  function classifyNutrient(key, val) {
+    if (val == null || isNaN(val)) return null;
+    const v = parseFloat(val);
+    const t = {
+      energy_kcal: { low: 120, high: 360 },
+      fat_g:       { low: 3,   high: 17.5 },
+      saturates_g: { low: 1.5, high: 5 },
+      carbohydrate_g: { low: 15, high: 30 },
+      sugars_g:    { low: 5,   high: 22.5 },
+      fiber_g:     { low: 3,   high: 6, invert: true },
+      protein_g:   { low: 3,   high: 10, invert: true },
+      salt_g:      { low: 0.3, high: 1.5 }
+    }[key];
+    if (!t) return null;
+    const { low, high, invert } = t;
+    if (v <= low) return invert ? 'high' : 'low';
+    if (v >= high) return invert ? 'low' : 'high';
+    return 'medium';
+  }
+
 
 
   function sendScan(base64Image) {
@@ -167,6 +188,29 @@ function resizeAndSend(file) {
             .addClass('anp-tile anp-flag-tile')
             .text(flag)
         );
+      });
+    }
+
+    if (analysis.nutrition && typeof analysis.nutrition === 'object') {
+      const names = {
+        energy_kcal: 'Energy (kcal)',
+        fat_g: 'Fat (g)',
+        saturates_g: 'Saturates (g)',
+        carbohydrate_g: 'Carb (g)',
+        sugars_g: 'Sugars (g)',
+        fiber_g: 'Fiber (g)',
+        protein_g: 'Protein (g)',
+        salt_g: 'Salt (g)'
+      };
+      Object.keys(names).forEach(key => {
+        const val = analysis.nutrition[key];
+        if (val == null) return;
+        const lvl = classifyNutrient(key, val);
+        const tile = $('<div>')
+          .addClass('anp-tile anp-nutrition-tile');
+        if (lvl) tile.addClass('anp-level-' + lvl);
+        tile.text(names[key] + ': ' + val);
+        container.append(tile);
       });
     }
 
