@@ -154,8 +154,19 @@ function anp_save_image($base64) {
     if (!preg_match($pattern, $base64, $m)) {
         return new WP_Error('invalid_image', 'Invalid image format');
     }
-    $ext  = strtolower($m[1]);
-    $data = base64_decode($m[2]);
+    $ext = strtolower($m[1]);
+
+    // Calculate expected byte size without decoding the entire string
+    $b64        = $m[2];
+    $data_len   = strlen($b64);
+    $padding    = substr_count(substr($b64, -2), '=');
+    $byte_size  = ($data_len * 3 / 4) - $padding;
+    $max_bytes  = 5 * 1024 * 1024; // 5 MB
+    if ($byte_size > $max_bytes) {
+        return new WP_Error('file_too_large', 'Image exceeds 5 MB limit');
+    }
+
+    $data = base64_decode($b64);
     if ($data === false) {
         return new WP_Error('decode_error', 'Base64 decode failed');
     }
