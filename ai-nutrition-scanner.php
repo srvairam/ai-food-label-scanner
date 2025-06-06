@@ -2,7 +2,7 @@
 /**
  * Plugin Name: AI Nutrition Scanner
  * Description: Mobile-first nutrition label scanner using Replicate OCR and OpenAI GPT-4 for WordPress.
- * Version: 1.1.1
+ * Version: 1.1.2
  * Author: Your Name
  */
 
@@ -41,8 +41,8 @@ register_activation_hook(__FILE__, 'anp_activate_plugin');
  */
 function anp_enqueue_assets() {
     if (ANP_DEBUG) error_log('[ANP] Enqueue assets');
-    wp_enqueue_style('anp-styles', ANP_PLUGIN_URL . 'assets/css/anp-styles.css', [], '1.1.1');
-    wp_enqueue_script('anp-scripts', ANP_PLUGIN_URL . 'assets/js/anp-scripts.js', ['jquery'], '1.1.1', true);
+    wp_enqueue_style('anp-styles', ANP_PLUGIN_URL . 'assets/css/anp-styles.css', [], '1.1.2');
+    wp_enqueue_script('anp-scripts', ANP_PLUGIN_URL . 'assets/js/anp-scripts.js', ['jquery'], '1.1.2', true);
     wp_localize_script('anp-scripts', 'anp_ajax', [
         'ajax_url' => admin_url('admin-ajax.php'),
         'nonce'    => wp_create_nonce('anp_nonce'),
