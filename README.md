@@ -2,6 +2,8 @@
 
 This WordPress plugin allows scanning nutrition labels and parsing their contents using OCR and GPT.
 
+Nutrition values are displayed with traffic-light colors (green/amber/red) based on UK-style thresholds so you can quickly see if sugars, fats or salt are high.
+
 ## Manual Test: Oversized Image Rejection
 
 1. Encode an image larger than 5 MB as a base64 data URI.
