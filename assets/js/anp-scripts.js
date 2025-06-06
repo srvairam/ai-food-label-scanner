@@ -154,30 +154,36 @@ function resizeAndSend(file) {
     const container = $('#anp-tiles').empty();
 
     if (analysis.expiry_date) {
-      container.append(`<div class="anp-tile anp-expiry-tile">Expiry: ${analysis.expiry_date}</div>`);
+      const expiry = $('<div>')
+        .addClass('anp-tile anp-expiry-tile')
+        .text('Expiry: ' + analysis.expiry_date);
+      container.append(expiry);
     }
+
     if (Array.isArray(analysis.flags) && analysis.flags.length) {
       analysis.flags.forEach(flag => {
-        container.append(`<div class="anp-tile anp-flag-tile">${flag}</div>`);
+        container.append(
+          $('<div>')
+            .addClass('anp-tile anp-flag-tile')
+            .text(flag)
+        );
       });
     }
+
     if (analysis.summary) {
       const sum = analysis.summary.replace(/```[\s\S]*?```/g, '').trim();
-      container.append(`
-        <div class="anp-tile anp-summary-tile">
-          <strong>Summary:</strong>
-          <p>${sum}</p>
-        </div>
-      `);
+      const tile = $('<div>').addClass('anp-tile anp-summary-tile');
+      tile.append($('<strong>').text('Summary:'));
+      tile.append($('<p>').text(sum));
+      container.append(tile);
     }
+
     if (analysis.alternative) {
       const alt = analysis.alternative.replace(/```[\s\S]*?```/g, '').trim();
-      container.append(`
-        <div class="anp-tile anp-alt-tile">
-          <strong>Alternative:</strong>
-          <p>${alt}</p>
-        </div>
-      `);
+      const tile = $('<div>').addClass('anp-tile anp-alt-tile');
+      tile.append($('<strong>').text('Alternative:'));
+      tile.append($('<p>').text(alt));
+      container.append(tile);
     }
   }
 });
