@@ -72,7 +72,7 @@ jQuery(function($){
         const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
 
         // Now send that grayscale JPEG to PHP via AJAX
-        sendToServer(resizedDataUrl);
+        sendScan(resizedDataUrl);
       };
 
       // Load the file into the Image object
@@ -195,7 +195,7 @@ function resizeAndSend(file) {
 
       // 9) Export as JPEG (80% quality) and send to server
       const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
-      sendToServer(resizedDataUrl);
+      sendScan(resizedDataUrl);
     };
 
     img.src = e.target.result;
