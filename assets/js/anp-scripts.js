@@ -195,7 +195,8 @@ function resizeAndSend(file) {
 
       // 9) Export as JPEG (80% quality) and send to server
       const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
-      sendToServer(resizedDataUrl);
+      // sendToServer(resizedDataUrl);
+      sendScan(resizedDataUrl);
     };
 
     img.src = e.target.result;
