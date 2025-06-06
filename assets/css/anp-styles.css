@@ -32,6 +32,18 @@
   text-align: center;
   font-size: .9rem;
 }
+.anp-flag-high {
+  background: #f8d7da;
+  color: #721c24;
+}
+.anp-flag-medium {
+  background: #fff3cd;
+  color: #856404;
+}
+.anp-flag-low {
+  background: #d4edda;
+  color: #155724;
+}
 .anp-loading {
   position: absolute;
   top: 50%;

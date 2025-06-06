@@ -234,7 +234,16 @@ function resizeAndSend(file) {
     }
     if (Array.isArray(analysis.flags) && analysis.flags.length) {
       analysis.flags.forEach(flag => {
-        container.append(`<div class="anp-tile anp-flag-tile">${flag}</div>`);
+        let cls = '';
+        const text = flag.toLowerCase();
+        if (text.includes('high')) {
+          cls = 'anp-flag-high';
+        } else if (text.includes('moderate') || text.includes('medium')) {
+          cls = 'anp-flag-medium';
+        } else if (text.includes('low') || text.includes('good')) {
+          cls = 'anp-flag-low';
+        }
+        container.append(`<div class="anp-tile anp-flag-tile ${cls}">${flag}</div>`);
       });
     }
     if (analysis.summary) {
