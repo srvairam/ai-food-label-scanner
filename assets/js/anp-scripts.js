@@ -31,94 +31,14 @@ function resizeAndSend(file) {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, w, h);
 
-      // 3) Convert to grayscale
-      let imageData = ctx.getImageData(0, 0, w, h);
-      let data = imageData.data;
-      for (let i = 0; i < data.length; i += 4) {
-        const r = data[i];
-        const g = data[i + 1];
-        const b = data[i + 2];
-        const gray = 0.21 * r + 0.72 * g + 0.07 * b;
-        data[i] = data[i + 1] = data[i + 2] = gray;
-      }
-      ctx.putImageData(imageData, 0, 0);
+      // Previously we converted to grayscale, boosted contrast,
+      // applied blur and thresholding. These steps caused the
+      // OCR preview to appear heavily distorted. We now skip
+      // these transformations so the server receives a
+      // minimally processed image.
 
-      // 4) Boost contrast (linear adjustment)
-      imageData = ctx.getImageData(0, 0, w, h);
-      data = imageData.data;
-      const contrastFactor = 1.2; // reduced from 1.5 to avoid blowing out digits
-      for (let i = 0; i < data.length; i += 4) {
-        let v = data[i];
-        v = (v - 128) * contrastFactor + 128;
-        if (v < 0) v = 0;
-        if (v > 255) v = 255;
-        data[i] = data[i + 1] = data[i + 2] = v;
-      }
-      ctx.putImageData(imageData, 0, 0);
-
-      // ───────────────────────────────────────────────────────────────
-      // 5) OPTIONAL: Apply a very mild blur (box blur) to remove tiny specks
-      //    This helps thresholding produce cleaner binary edges.
-      //
-      //    We’ll do a 3×3 box blur by averaging each pixel with its neighbors.
-      const temp = ctx.getImageData(0, 0, w, h);
-      const tempData = temp.data;
-      const dst   = ctx.createImageData(w, h);
-      const dstData = dst.data;
-      for (let y = 1; y < h - 1; y++) {
-        for (let x = 1; x < w - 1; x++) {
-          let sum = 0;
-          // sum the 3×3 block around (x,y)
-          for (let dy = -1; dy <= 1; dy++) {
-            for (let dx = -1; dx <= 1; dx++) {
-              const idx = ((y + dy) * w + (x + dx)) * 4;
-              sum += tempData[idx]; // red channel (all are gray)
-            }
-          }
-          const avg = sum / 9;
-          const destIdx = (y * w + x) * 4;
-          dstData[destIdx] = dstData[destIdx + 1] = dstData[destIdx + 2] = avg;
-          dstData[destIdx + 3] = tempData[destIdx + 3]; // keep alpha
-        }
-      }
-      ctx.putImageData(dst, 0, 0);
-
-      // ───────────────────────────────────────────────────────────────
-      // 6) Binarize (thresholding) → black & white
-      //    Lower threshold a bit to 120 so decimals/slashes survive.
-      imageData = ctx.getImageData(0, 0, w, h);
-      data = imageData.data;
-      const threshold = 120; 
-      for (let i = 0; i < data.length; i += 4) {
-        const v = data[i]; // already grayscale
-        const bw = v > threshold ? 255 : 0;
-        data[i] = data[i + 1] = data[i + 2] = bw;
-      }
-      ctx.putImageData(imageData, 0, 0);
-
-      // ───────────────────────────────────────────────────────────────
-      // 7) OPTIONAL: Deskew (rotate so lines of text are horizontal)
-      //    If you integrate a small Hough‐transform library, compute skewAngle here:
-      //    const skewAngle = computeSkewAngle(canvas);
-      //    if (Math.abs(skewAngle) > 0.5) {
-      //      const deskewed = document.createElement('canvas');
-      //      deskewed.width = w;
-      //      deskewed.height = h;
-      //      const dctx = deskewed.getContext('2d');
-      //      dctx.translate(w/2, h/2);
-      //      dctx.rotate(-skewAngle * Math.PI/180);
-      //      dctx.drawImage(canvas, -w/2, -h/2);
-      //      ctx.clearRect(0, 0, w, h);
-      //      ctx.drawImage(deskewed, 0, 0);
-      //    }
-
-      // ───────────────────────────────────────────────────────────────
-      // 8) (Debug) You can inspect the final B&W image by opening in a new tab:
-      //    window.open(canvas.toDataURL(), '_blank');
-
-      // 9) Export as JPEG (80% quality) and send to server
+      // Export as JPEG (80% quality) and send to server
       const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
-      // sendToServer(resizedDataUrl);
       sendScan(resizedDataUrl);
     };
 
