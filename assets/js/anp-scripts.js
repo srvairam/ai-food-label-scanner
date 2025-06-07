@@ -201,5 +201,6 @@ function resizeAndSend(file) {
   }
   if (typeof module !== 'undefined') {
     module.exports = { classifyNutrient, sendScan, sendToServer };
+
   }
 });
