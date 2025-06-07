@@ -1,0 +1,13 @@
+{
+  "name": "ai-food-label-scanner/plugin-tests",
+  "description": "PHP unit tests for the AI Nutrition Scanner plugin",
+  "require-dev": {
+    "phpunit/phpunit": "^9"
+  },
+  "autoload": {
+    "files": ["ai-nutrition-scanner.php"]
+  },
+  "scripts": {
+    "test": "phpunit"
+  }
+}
