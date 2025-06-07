@@ -1,0 +1,8 @@
+{
+  "name": "ai-food-label-scanner",
+  "version": "1.0.0",
+  "description": "Development utilities for the AI Nutrition Scanner plugin",
+  "scripts": {
+    "test": "node --test"
+  }
+}
