@@ -2,7 +2,7 @@
 /**
  * Plugin Name: AI Nutrition Scanner
  * Description: Mobile-first nutrition label scanner using Replicate OCR and OpenAI GPT-4 for WordPress.
- * Version: 1.1.2
+ * Version: 1.1.3
  * Author: Your Name
  */
 
@@ -41,8 +41,8 @@ register_activation_hook(__FILE__, 'anp_activate_plugin');
  */
 function anp_enqueue_assets() {
     if (ANP_DEBUG) error_log('[ANP] Enqueue assets');
-    wp_enqueue_style('anp-styles', ANP_PLUGIN_URL . 'assets/css/anp-styles.css', [], '1.1.2');
-    wp_enqueue_script('anp-scripts', ANP_PLUGIN_URL . 'assets/js/anp-scripts.js', ['jquery'], '1.1.2', true);
+    wp_enqueue_style('anp-styles', ANP_PLUGIN_URL . 'assets/css/anp-styles.css', [], '1.1.3');
+    wp_enqueue_script('anp-scripts', ANP_PLUGIN_URL . 'assets/js/anp-scripts.js', ['jquery'], '1.1.3', true);
     wp_localize_script('anp-scripts', 'anp_ajax', [
         'ajax_url' => admin_url('admin-ajax.php'),
         'nonce'    => wp_create_nonce('anp_nonce'),
@@ -513,6 +513,7 @@ function anp_openai_extract_after_clean($cleaned_text) {
     $api_key = get_option('anp_openai_api_key');
     if (empty($api_key)) {
         return [
+            'product_name'=> null,
             'expiry_date' => null,
             'flags'       => [],
             'nutrition'   => [],
@@ -535,8 +536,10 @@ function anp_openai_extract_after_clean($cleaned_text) {
     $prompt .= "Your job:\n";
     $prompt .= "  1) If you see any expiry/best‐before date (e.g. 'BEST BEFORE: 2025-08-01'), return it as “YYYY-MM-DD”. If there is no explicit date, return null.\n";
     $prompt .= "  2) Identify any red‐alert flags (e.g. \"High Sugar\" if sugars per prepared serving > 15 g). You decide reasonable cutoffs.\n";
-    $prompt .= "  3) Return exactly one JSON object with these keys (no others):\n";
+    $prompt .= "  3) If you can identify the product name, include it.\n";
+    $prompt .= "  4) Return exactly one JSON object with these keys (no others):\n";
     $prompt .= "      {\n";
+    $prompt .= "        \"product_name\": <string|null>,\n";
     $prompt .= "        \"expiry_date\": <string|null>,\n";
     $prompt .= "        \"flags\": [ /* array of strings */ ],\n";
     $prompt .= "        \"nutrition\": {\n";
@@ -618,6 +621,7 @@ function anp_openai_extract_after_clean($cleaned_text) {
     ];
 
     return [
+        'product_name'=> $data['product_name']  ?? null,
         'expiry_date' => $data['expiry_date']   ?? null,
         'flags'       => $data['flags']         ?? [],
         'nutrition'   => $normalized_nutrition,

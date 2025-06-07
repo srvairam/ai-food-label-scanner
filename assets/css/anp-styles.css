@@ -53,3 +53,7 @@
   transform: translateY(-50%);
   font-size: 1.1rem;
 }
+
+.anp-product-tile {
+  font-weight: bold;
+}
