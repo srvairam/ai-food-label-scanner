@@ -580,6 +580,7 @@ function anp_openai_extract_after_clean($cleaned_text) {
 
     if (is_wp_error($response)) {
         return [
+            'product_name'=> null,
             'expiry_date' => null,
             'flags'       => [],
             'nutrition'   => [],
@@ -599,6 +600,7 @@ function anp_openai_extract_after_clean($cleaned_text) {
     if (!is_array($data)) {
         // GPT didn’t return valid JSON → fallback
         return [
+            'product_name'=> null,
             'expiry_date' => null,
             'flags'       => [],
             'nutrition'   => [],
