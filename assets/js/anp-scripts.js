@@ -200,6 +200,7 @@ function resizeAndSend(file) {
     window.sendToServer = sendToServer;
   }
   if (typeof module !== 'undefined') {
-    module.exports = { classifyNutrient, sendScan };
+    module.exports = { classifyNutrient, sendScan, sendToServer };
+
   }
 });
