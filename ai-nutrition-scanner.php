@@ -2,8 +2,14 @@
 /**
  * Plugin Name: AI Nutrition Scanner
  * Description: Mobile-first nutrition label scanner using Replicate OCR and OpenAI GPT-4 for WordPress.
- * Version: 1.1.3
+ * Version: 1.1.5
  * Author: Your Name
+ */
+
+/**
+ * Version 1.1.5 highlights:
+ * - Added section annotations for maintainability
+ * - Bumped asset versions
  */
 
 if (!defined('ABSPATH')) exit;
@@ -12,8 +18,9 @@ define('ANP_DEBUG', true);
 define('ANP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('ANP_PLUGIN_URL', plugin_dir_url(__FILE__));
 
+// ----- Section: Activation -----
 /**
- * Activation: Create scan history table
+ * Create scan history table on plugin activation
  */
 function anp_activate_plugin() {
     global $wpdb;
@@ -36,13 +43,15 @@ function anp_activate_plugin() {
 }
 register_activation_hook(__FILE__, 'anp_activate_plugin');
 
+// ----- Section: Assets -----
 /**
- * Enqueue front-end assets
+ * Enqueue front-end scripts and styles
  */
 function anp_enqueue_assets() {
     if (ANP_DEBUG) error_log('[ANP] Enqueue assets');
-    wp_enqueue_style('anp-styles', ANP_PLUGIN_URL . 'assets/css/anp-styles.css', [], '1.1.3');
-    wp_enqueue_script('anp-scripts', ANP_PLUGIN_URL . 'assets/js/anp-scripts.js', ['jquery'], '1.1.3', true);
+    wp_enqueue_style('anp-styles', ANP_PLUGIN_URL . 'assets/css/anp-styles.css', [], '1.1.5');
+    wp_enqueue_script('anp-scripts', ANP_PLUGIN_URL . 'assets/js/anp-scripts.js', ['jquery'], '1.1.5', true);
+
     wp_localize_script('anp-scripts', 'anp_ajax', [
         'ajax_url' => admin_url('admin-ajax.php'),
         'nonce'    => wp_create_nonce('anp_nonce'),
@@ -50,8 +59,9 @@ function anp_enqueue_assets() {
 }
 add_action('wp_enqueue_scripts', 'anp_enqueue_assets');
 
+// ----- Section: Shortcode -----
 /**
- * Shortcode: Display scanner UI
+ * Display scanner UI via shortcode
  */
 function anp_scanner_shortcode() {
     if (ANP_DEBUG) error_log('[ANP] Render scanner shortcode');
@@ -67,6 +77,7 @@ function anp_scanner_shortcode() {
 }
 add_shortcode('anp_scanner', 'anp_scanner_shortcode');
 
+// ----- Section: AJAX Handler -----
 /**
  * AJAX handler: Process scan
  */
@@ -144,6 +155,7 @@ function anp_handle_scan() {
 add_action('wp_ajax_anp_scan', 'anp_handle_scan');
 add_action('wp_ajax_nopriv_anp_scan', 'anp_handle_scan');
 
+// ----- Section: Image Saving -----
 /**
  * Save base64 image
  */
@@ -178,6 +190,7 @@ function anp_save_image($base64) {
     return $upload;
 }
 
+// ----- Section: OCR via Replicate -----
 /**
  * Perform OCR via Replicate with polling
  */
@@ -234,6 +247,7 @@ function anp_replicate_ocr($url) {
 }
 
 
+// ----- Section: OpenAI Helpers -----
 /**
  * Parse nutrition fields from OCR text
  */
@@ -774,6 +788,7 @@ function anp_openai_full_analysis($ocr_text) {
 }
 
 
+// ----- Section: Admin Settings -----
 /**
  * Admin menu and settings page
  */

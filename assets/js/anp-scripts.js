@@ -1,4 +1,6 @@
 jQuery(function($){
+  // Version 1.1.5 - annotated sections
+  // ----- Image capture -----
   // When user clicks “📸 Scan Label”
   $('#anp-scan-btn').on('click', function() {
     const input = $('<input type="file" accept="image/*" capture="environment">');
@@ -10,6 +12,7 @@ jQuery(function($){
     input.trigger('click');
   });
 
+// ----- Resize and upload -----
 function resizeAndSend(file) {
   const reader = new FileReader();
 
@@ -70,7 +73,7 @@ function resizeAndSend(file) {
   }
 
 
-
+  // ----- AJAX upload -----
   function sendScan(base64Image) {
     $('#anp-loading').show();
     $.post(anp_ajax.ajax_url, {
@@ -90,7 +93,7 @@ function resizeAndSend(file) {
       console.error(err);
     });
   }
-
+  // ----- Render result tiles -----
   function renderTiles(analysis) {
     const container = $('#anp-tiles').empty();
 
