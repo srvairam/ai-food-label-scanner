@@ -1,4 +1,6 @@
 jQuery(function($){
+  // Version 1.1.5 - annotated sections
+  // ----- Image capture -----
   // When user clicks “📸 Scan Label”
   $('#anp-scan-btn').on('click', function() {
     const input = $('<input type="file" accept="image/*" capture="environment">');
@@ -10,6 +12,7 @@ jQuery(function($){
     input.trigger('click');
   });
 
+// ----- Resize and upload -----
 function resizeAndSend(file) {
   const reader = new FileReader();
 
@@ -70,7 +73,7 @@ function resizeAndSend(file) {
   }
 
 
-
+  // ----- AJAX upload -----
   function sendScan(base64Image) {
     $('#anp-loading').show();
     $.post(anp_ajax.ajax_url, {
@@ -90,15 +93,35 @@ function resizeAndSend(file) {
       console.error(err);
     });
   }
-
+  // ----- Render result tiles -----
   function renderTiles(analysis) {
     const container = $('#anp-tiles').empty();
+
+    if (analysis.product_name) {
+      container.append(
+        $('<div>')
+          .addClass('anp-tile anp-product-tile')
+          .text('Product: ' + analysis.product_name)
+      );
+    } else {
+      container.append(
+        $('<div>')
+          .addClass('anp-tile anp-product-tile')
+          .text('No product name available')
+      );
+    }
 
     if (analysis.expiry_date) {
       const expiry = $('<div>')
         .addClass('anp-tile anp-expiry-tile')
         .text('Expiry: ' + analysis.expiry_date);
       container.append(expiry);
+    } else {
+      container.append(
+        $('<div>')
+          .addClass('anp-tile anp-expiry-tile')
+          .text('No expiry date available')
+      );
     }
 
     if (Array.isArray(analysis.flags) && analysis.flags.length) {
@@ -122,6 +145,7 @@ function resizeAndSend(file) {
         protein_g: 'Protein (g)',
         salt_g: 'Salt (g)'
       };
+      let anyNut = false;
       Object.keys(names).forEach(key => {
         const val = analysis.nutrition[key];
         if (val == null) return;
@@ -129,9 +153,23 @@ function resizeAndSend(file) {
         const tile = $('<div>')
           .addClass('anp-tile anp-nutrition-tile');
         if (lvl) tile.addClass('anp-level-' + lvl);
-        tile.text(names[key] + ': ' + val);
+        tile.text(names[key]);
         container.append(tile);
+        anyNut = true;
       });
+      if (!anyNut) {
+        container.append(
+          $('<div>')
+            .addClass('anp-tile anp-nutrition-tile')
+            .text('No nutrition data available')
+        );
+      }
+    } else {
+      container.append(
+        $('<div>')
+          .addClass('anp-tile anp-nutrition-tile')
+          .text('No nutrition data available')
+      );
     }
 
     if (analysis.summary) {
