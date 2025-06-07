@@ -93,6 +93,11 @@ function resizeAndSend(file) {
       console.error(err);
     });
   }
+
+  // Temporary alias for older code referencing sendToServer
+  function sendToServer(base64Image) {
+    sendScan(base64Image);
+  }
   // ----- Render result tiles -----
   function renderTiles(analysis) {
     const container = $('#anp-tiles').empty();
@@ -187,5 +192,14 @@ function resizeAndSend(file) {
       tile.append($('<p>').text(alt));
       container.append(tile);
     }
+  }
+  // Expose helpers for testing and legacy support
+  if (typeof window !== 'undefined') {
+    window.classifyNutrient = classifyNutrient;
+    window.sendScan = sendScan;
+    window.sendToServer = sendToServer;
+  }
+  if (typeof module !== 'undefined') {
+    module.exports = { classifyNutrient, sendScan, sendToServer };
   }
 });
