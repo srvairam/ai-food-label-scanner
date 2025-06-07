@@ -51,6 +51,7 @@ function anp_enqueue_assets() {
     if (ANP_DEBUG) error_log('[ANP] Enqueue assets');
     wp_enqueue_style('anp-styles', ANP_PLUGIN_URL . 'assets/css/anp-styles.css', [], '1.1.5');
     wp_enqueue_script('anp-scripts', ANP_PLUGIN_URL . 'assets/js/anp-scripts.js', ['jquery'], '1.1.5', true);
+
     wp_localize_script('anp-scripts', 'anp_ajax', [
         'ajax_url' => admin_url('admin-ajax.php'),
         'nonce'    => wp_create_nonce('anp_nonce'),
